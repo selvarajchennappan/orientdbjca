@@ -1,0 +1,49 @@
+<weblogic-connector
+	xmlns="http://xmlns.oracle.com/weblogic/weblogic-connector" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-connector
+            http://xmlns.oracle.com/weblogic/weblogic-connector/1.3/weblogic-connector.xsd">
+	<jndi-name>OrientDBResource</jndi-name>
+	<enable-access-outside-app>true</enable-access-outside-app>
+	<enable-global-access-to-classes>true</enable-global-access-to-classes>
+	<outbound-resource-adapter>
+		<connection-definition-group>
+			<connection-factory-interface>org.sample.orient.adapter.jca.api.OrientDatabaseConnectionFactory
+			</connection-factory-interface>
+			<connection-instance>
+				<jndi-name>eis/orientDB</jndi-name>
+				<connection-properties>
+					<pool-params>
+						<initial-capacity>10</initial-capacity>
+						<max-capacity>130</max-capacity>
+						<capacity-increment>1</capacity-increment>
+						<shrinking-enabled>true</shrinking-enabled>
+						<shrink-frequency-seconds>60</shrink-frequency-seconds>
+					</pool-params>
+					<logging>
+						<log-filename>C:\Users\608135081\desktop\STI\log\orient-jca.log</log-filename>
+						<logging-enabled>true</logging-enabled>
+						<rotation-type>bySize</rotation-type>
+						<file-size-limit>600</file-size-limit>
+					</logging>
+					<transaction-support>XATransaction</transaction-support>
+					<properties>
+						<property>
+							<name>connectionUrl</name>
+							<value>remote:localhost/study</value>
+						</property>
+						<property>
+							<name>username</name>
+							<value>admin</value>
+						</property>
+						<property>
+							<name>password</name>
+							<value>admin</value>
+						</property>
+					</properties>
+				</connection-properties>
+
+			</connection-instance>
+		</connection-definition-group>
+
+	</outbound-resource-adapter>
+</weblogic-connector>

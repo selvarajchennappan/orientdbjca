@@ -1,0 +1,83 @@
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "war"
+
+apply plugin: 'groovy'
+
+ext { integrationTestBaseDir = 'src/integration-test' }
+
+
+eclipse {
+	classpath {
+		downloadSources = false
+		downloadJavadoc = false
+	}
+}
+
+task create_dirs << {
+	sourceSets*.java.srcDirs*.each { it.mkdirs() }
+	sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+}
+
+task create_web_dirs (dependsOn: [create_dirs]) << {
+	ext.metainf = new File( "src/main/webapp/META-INF" )
+	ext.webinf = new File( "src/main/webapp/WEB-INF" )
+
+	ext.metainf.mkdirs()
+	ext.webinf.mkdirs()
+}
+
+war {
+	manifest {
+		attributes "Implementation-Title": "Orient-XATransaction", "Implementation-Version": "0.1"
+	}
+}
+
+repositories {
+	mavenCentral()
+	flatDir(dirs: "lib")
+	maven {
+		credentials {
+			username '608135081'
+			password 'balmurvin^6'
+		}
+		url 'https://collaborate.bt.com/artefacts/content/groups/public'
+		artifactUrls 'https://collaborate.bt.com/artefacts/content/repositories/thirdparty'
+	}
+}
+
+
+
+sourceSets {
+	integrationTest {
+		groovy { srcDir "${integrationTestBaseDir }/groovy" }
+		resources { srcDir "${integrationTestBaseDir }/resources" }
+		compileClasspath += sourceSets.main.runtimeClasspath
+		compileClasspath += configurations.testCompile
+	}
+}
+
+dependencies {
+	compile 'org.sample:orient-jca-ra-api-0.0.1-SNAPSHOT:false',
+			'com.oracle:ojdbc6:11.2.0.4',
+			'com.orientechnologies:orientdb-community:2.1-rc1',
+			'javax.resource:javax.resource-api:1.7',
+			'org.slf4j:slf4j-api:1.7.12',
+			'org.codehaus.groovy:groovy-all:2.3.11',
+			'javax.ejb:javax.ejb-api:3.2',
+			'javax.ws.rs:javax.ws.rs-api:2.0.1',
+			'org.glassfish.jersey.core:jersey-client:2.17'
+
+	testCompile 'junit:junit:4.11',
+			'org.spockframework:spock-core:1.0-groovy-2.3'
+		}
+
+task integrationTest(type: Test) {
+	description = "Runs integration tests"
+	testClassesDir = sourceSets.integrationTest.output.classesDir
+	classpath += sourceSets.integrationTest.runtimeClasspath
+}
+
+
+
+

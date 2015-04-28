@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+version = property( 'orient_adapter.version' )
+jar.archiveName = "orient-jca-${version}" + ".jar"
+sourceCompatibility = property( 'orient_adapter.sourceCompatibility' )
+
+repositories {  mavenCentral() }
+
+dependencies {
+	compile 'com.orientechnologies:orientdb-community:2.1-rc1',
+			'javax.resource:javax.resource-api:1.7',
+			'org.slf4j:slf4j-api:1.7.12'
+}
+
+task rar( type: Zip, dependsOn: 'jar', description: 'Package the resource adapter .rar file') {
+	group = 'JCA'
+	description = "Assembles a resource adapter .rar file"
+	destinationDir = project.file('build/libs')
+	archiveName = "orient-jca-${version}.rar"
+	extension = "rar"
+	from configurations.runtime
+	from "build/libs/orient-jca-ra-api-${version}.jar"
+	from "build/libs/orient-jca-ra-impl-${version}.jar"
+	from "src/main/resources/"
+}
+
+task orientjcaraapiJar(type: Jar) {
+	from(sourceSets.main.output) { include "org/sample/orient/adapter/jca/api/**"  }
+	baseName = 'orient-jca-ra-api'
+}
+
+task orientjcaraimplJar(type: Jar) {
+	from(sourceSets.main.output) { include "org/sample/orient/adapter/jca/impl/**"  }
+	baseName = 'orient-jca-ra-impl'
+}
+
+artifacts {
+	archives orientjcaraapiJar
+	archives orientjcaraimplJar
+	archives rar
+}
+
